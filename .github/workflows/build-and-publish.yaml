@@ -1,0 +1,32 @@
+name: Build and Publish
+
+on: [push]
+
+jobs:
+  build-and-publish-to-ghcr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Crossplane CLI
+        run: |
+          curl -sL "https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh" |sh
+          sudo mv crossplane /usr/local/bin
+
+      - name: Build Crossplane Configuration & Publish
+        run: |
+          echo "### Build Configuration .xpkg file"
+          crossplane xpkg build --package-root=. --examples-root="./examples" --ignore=".github/workflows/*" --verbose
+
+          echo "### Publish as OCI image to GHCR"
+          crossplane xpkg push "ghcr.io/sijoma/platform-sijoma-encryption:${{ github.ref_name }}" --domain=https://ghcr.io --verbose
