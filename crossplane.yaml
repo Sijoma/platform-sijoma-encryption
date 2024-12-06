@@ -1,0 +1,36 @@
+apiVersion: meta.pkg.crossplane.io/v1
+kind: Configuration
+metadata:
+  name: configuration-encryption
+  annotations:
+    meta.crossplane.io/maintainer: Sijoma
+    meta.crossplane.io/source: link
+    meta.crossplane.io/license: Apache-2.0
+    meta.crossplane.io/description: |
+      bla
+    meta.crossplane.io/readme: |
+      my crossplane
+spec:
+  crossplane:
+    version: ">=v1.14.1-0"
+  dependsOn:
+    - provider:  xpkg.upbound.io/upbound/provider-gcp-kms
+      version: "v1.8.3"
+    - provider: xpkg.upbound.io/crossplane-contrib/provider-kubernetes
+      # renovate: datasource=github-releases depName=crossplane-contrib/provider-kubernetes
+      version: "v0.12.1"
+    - function: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform
+      # renovate: datasource=github-releases depName=crossplane-contrib/function-patch-and-transform
+      version: "v0.4.0"
+    - function: xpkg.upbound.io/crossplane-contrib/function-kcl
+      # renovate: datasource=github-releases depName=crossplane-contrib/function-kcl
+      version: "v0.6.0"
+    - function: xpkg.upbound.io/crossplane-contrib/function-auto-ready
+      # renovate: datasource=github-releases depName=crossplane-contrib/function-auto-ready
+      version: "v0.2.1"
+    - function: xpkg.upbound.io/crossplane-contrib/function-sequencer
+      # renovate: datasource=github-releases depName=crossplane-contrib/function-sequencer
+      version: "v0.1.2"
+    - function:  xpkg.upbound.io/crossplane-contrib/function-environment-configs
+      # renovate: datasource=github-releases depName=crossplane-contrib/function-environment-configs
+      version: "v0.1.0"

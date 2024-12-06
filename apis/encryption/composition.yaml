@@ -1,0 +1,52 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: encryptionkey-composition
+spec:
+  compositeTypeRef:
+    apiVersion: xplane.sijoma.io/v1alpha1
+    kind: XEncryptionKey
+  mode: Pipeline
+  pipeline:
+    - step: environmentConfigs
+      functionRef:
+        name: function-environment-configs
+      input:
+        apiVersion: environmentconfigs.fn.crossplane.io/v1beta1
+        kind: Input
+        spec:
+          environmentConfigs:
+            - type: Reference
+              ref:
+                name: worker-environment
+    - step: patch-and-transform
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        resources:
+          - name: crypto-key
+            base:
+              apiVersion: kms.gcp.upbound.io/v1beta2
+              kind: CryptoKey
+              spec:
+                forProvider:
+                  purpose: ENCRYPT_DECRYPT
+                  rotationPeriod: 31536000s
+                  versionTemplate:
+                    algorithm: GOOGLE_SYMMETRIC_ENCRYPTION
+            patches:
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.protectionLevel
+                toFieldPath: spec.forProvider.versionTemplate.protectionLevel
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider.id
+                toFieldPath: status.primaryKey
+                policy:
+                  fromFieldPath: Required
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider.primary[0].name
+                toFieldPath: status.primaryKeyWithVersion
+                policy:
+                  fromFieldPath: Required

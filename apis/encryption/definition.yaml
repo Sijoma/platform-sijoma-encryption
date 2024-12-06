@@ -1,0 +1,37 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xencryptionkeys.xplane.sijoma.io
+spec:
+  group: xplane.sijoma.io
+  names:
+    kind: XEncryptionKey
+    plural: xencryptionkeys
+  claimNames:
+    kind: EncryptionKey
+    plural: encryptionkeys
+  versions:
+  - name: v1alpha1
+    served: true
+    referenceable: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              protectionLevel:
+                type: string
+                enum:
+                  - SOFTWARE
+                  - HARDWARE
+            required:
+              - protectionLevel
+          status:
+            type: object
+            properties:
+              primaryKey:
+                type: string
+              primaryKeyWithVersion:
+                type: string
