@@ -1,0 +1,4 @@
+*.xpkg
+/.idea/modules.xml
+/.idea/platform-sijoma-encryption.iml
+/.idea/vcs.xml
